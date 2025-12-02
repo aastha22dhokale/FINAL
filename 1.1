@@ -1,155 +1,140 @@
-DD_OS_EXT_CTRL_OWNER
-
-===STG TABLE===
-
-CREATE TABLE DD_OS_EXT_STG_COFACE_OPS(
-SRC_INSTN_ID VARCHAR2(255),
-FILE_NAME VARCHAR2(255),
-xml_data XMLTYPE,
-oper_period varchar2(10),
-frequency varchar2(2)
-);
-
-=====AUDIT TABLE==========
-
-CREATE TABLE "DD_AUDIT_FLOW_STATUS"
-   (           "AUDIT-ID" VARCHAR2(255 CHAR),
-    "APPLICATION_CD" VARCHAR2(45 CHAR) ,
-               "FLOW_CD" VARCHAR2(45 CHAR) ,
-               "LAST_PROCESSING_TMS" TIMESTAMP,
-               "NEXT_PROCESSING_TMS" TIMESTAMP
-   )   ;
-
-====MAPPING TABLE=========
-
-  CREATE TABLE "DD_MAP_TBL"
-   (
-               "DD_UUID" VARCHAR2(50 CHAR),
-               "TYP_OF_ENTY" VARCHAR2(10),
-               "FIRST_NAME" VARCHAR2(255 CHAR),
-               "LAST_NAME" VARCHAR2(255 CHAR),
-               "BIRTH_DATE" TIMESTAMP (6),
-               "BIRTH_LOCALITY" VARCHAR2(255 CHAR),
-               "BIRTH_COUNTRY" VARCHAR2(255 CHAR),
-               "ADDR_STREET_NAME" VARCHAR2(64),
-               "ADDR_HOUSE_NUMBER" VARCHAR2(10),
-               "ADDR_BOX_NUMBER" VARCHAR2(10),
-               "ADDR_POSTAL_CODE" VARCHAR2(20),
-               "ADDR_LOCALITY_NAME" VARCHAR2(50),
-               "ADDR_COUNTRY_CODE" NUMBER(2,0),
-               "ORG_NUMBER" VARCHAR2(255 CHAR)
-   );
-
-====SEQUENCE=========
-
-CREATE SEQUENCE DD_UUID_SEQ MAXVALUE 99999999999999999999 INCREMENT BY 1 NOORDER;
-
-insert into DD_MAP_TBL(DD_UUID, TYP_OF_ENTY) values( DD_UUID_SEQ.nextval, 'some value');
-commit;
-
-ALTER TABLE dd_map_tbl
-ADD LE_NUMBER VARCHAR2(255 char);
-
-CREATE TABLE DD_cofaceops_TBL
-   (
-               "DD_UUID" VARCHAR2(50 CHAR),
-               "ORG_NUMBER" VARCHAR2(50 CHAR),
-               "OPS_ORGANISATIONUNITNAME" VARCHAR2(255 CHAR),
-               "ADR_POSTALADDRESS_STREETNM" VARCHAR2(255 CHAR),
-               "ADR_POSTALADDRESS_HOUSENUM" VARCHAR2(255 CHAR),
-               "ADR_POSTALADDRESS_HOUSEADD" VARCHAR2(255 CHAR),
-               "ADR_POSTALADDRESS_POSTALCD" VARCHAR2(64),
-               "ADR_POSTALADDRESS_CITYNAME" VARCHAR2(50),
-               "ADR_POSTALADDRESS_CNTRYCD" VARCHAR2(50),
-			   "OPS_EXTID_DATEOFISSUE" VARCHAR2(50),
-   			   "OPS_EXTID_EXPIRYDATE" VARCHAR2(50),
-               "ADR_DIGITALADDR_FULLTEL" VARCHAR2(50),
-               "ADR_DIGITALADDR_FULLTELFGN" VARCHAR2(50),
-               "ADR_DIGITALADDR_EMAIL" VARCHAR2(50)
-   );
-ALTER TABLE dd_cofaceops_tbl  ADD LE_NUMBER VARCHAR2(255 char) ADD LE_UUID VARCHAR2(50 char) ;
-ALTER TABLE dd_cofaceops_tbl  ADD RECORD_ACTION_TYPE VARCHAR2(255 char);
-
-ALTER TABLE DD_MAP_TBL
-RENAME COLUMN ORG_NUMBER TO OPS_NUMBER;
-
-ALTER TABLE DD_MAP_TBL
-RENAME COLUMN LE_NUMBER TO ORG_NUMBER;
-
-ALTER TABLE DD_cofaceops_TBL
-RENAME COLUMN ORG_NUMBER TO OPS_NUMBER;
-
-ALTER TABLE DD_cofaceops_TBL
-RENAME COLUMN DD_UUID TO OPS_UUID;
-
-ALTER TABLE DD_cofaceops_TBL
-RENAME COLUMN LE_UUID TO ORG_UUID;
-
-
-ALTER TABLE DD_cofaceops_TBL
-RENAME COLUMN LE_NUMBER TO ORG_NUMBER;
-
-
-====ACCOUNT TABLE=========
-
-CREATE TABLE "SYSTEM"."DD_ACCOUNT_TBL"
-(
-	"DD_UUID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
-	"EVENT_ID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
-	"TYP_OF_ENTY" VARCHAR2(10 BYTE),
-	"FIRST_NAME" VARCHAR2(255 CHAR),
-	"LAST_NAME" VARCHAR2(255 CHAR),
-	"BIRTH_DATE" DATE,
-	"BIRTH_LOCALITY" VARCHAR2(255 CHAR),
-	"BIRTH_COUNTRY" VARCHAR2(255 CHAR),
-	"ADDR_STREET_NAME" VARCHAR2(64 BYTE),
-	"ADDR_HOUSE_NUMBER" VARCHAR2(10 BYTE),
-	"ADDR_BOX_NUMBER" VARCHAR2(10 BYTE),
-	"ADDR_POSTAL_CODE" VARCHAR2(20 BYTE),
-	"ADDR_LOCALITY_NAME" VARCHAR2(50 BYTE),
-	"ADDR_COUNTRY_CODE" NUMBER(2,0),
-	"ORG_NUMBER" VARCHAR2(255 CHAR),
-    "UPDATED_TIME" TIMESTAMP
-);
-
-====EVENT TRACK TABLE=========
-
-CREATE TABLE "SYSTEM"."DD_EVENT_TRACK_TBL"
-(
-	"DD-UUID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
-	"EVENT_ID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
-	"EVENT_NAME" VARCHAR2(50 CHAR),
-	"NOTIFICATION_TIME" TIMESTAMP,
-	"NOTIFICATION_TYPE" VARCHAR2(255 CHAR),
-	"TRANSACTION_TYPE" VARCHAR2(20 BYTE),
-	"SERVICE_EVENT_CORRELATION_ID" VARCHAR2(20 BYTE),
-	"SERVICE_EVENT_PARENT_EVENT_ID" VARCHAR2(20 BYTE),
-	"ACCESS_TOKEN_VALUE" VARCHAR2(10 BYTE),
-	"USER" VARCHAR2(20 BYTE),
-	"DATA_RESPONSE_FROM" VARCHAR2(10 BYTE)
-);
-
-ALTER TABLE DD_EVENT_TRACK_TBL  ADD STATUS VARCHAR2(255 char) ;
-ALTER TABLE DD_EVENT_TRACK_TBL
-RENAME COLUMN "DD-UUID" TO DD_UUID;
-
-
-ALTER TABLE DD_EVENT_TRACK_TBL
-MODIFY (
-    DD_UUID VARCHAR2(50 CHAR) NULL,
-    EVENT_ID VARCHAR2(50 CHAR) NULL,
-    TRANSACTION_TYPE VARCHAR2(50 CHAR)
-);
-
-ALTER TABLE dd_cofaceops_tbl DROP COLUMN RECORD_ACTION_TYPE;
-
-
-ALTER TABLE DD_ACCOUNT_TBL ADD DIGITAL_ADDRESS VARCHAR2(255 char) ;
-ALTER TABLE DD_ACCOUNT_TBL MODIFY ADDR_COUNTRY_CODE VARCHAR2(10 CHAR);
-
-
-CREATE TABLE DD_NOTIFICATION_STATUS (
-  DD_UUID     VARCHAR2(50 CHAR)         NOT NULL,
-  STATUS      VARCHAR2(50 CHAR)  NOT NULL
-);
-
+P33558-DataDistributorAPI
+.idea
+DataDistribution
+src
+main
+java
+datadist
+api
+config
+InvolvedPartyApiProperties
+exception
+DataDistributionApiException
+model
+CreateDigitalAddressV5Request
+CreateDigitalAddressV5Response
+CreateInternalIdentifierRequest
+CreateInvolvedPartyRequestV5
+CreateInvolvedPartyResponseV5
+CreateOrganisationUnitNameRequest
+CreateOrganisationUnitRequest
+CreateOrganisationUnitResponse
+CreatePostalAddressRequest
+DigitalAddressResponse
+ErrorResponse
+GroupResponse
+InnerErrorResponse
+InternalIdentifierResponse
+InvolvedPartiesLinkHrefResponse
+InvolvedPartiesLinkSelfResponse
+InvolvedPartiesOrganisationUnitResponse
+ManagingEntityResponse
+OrganisationNameResponse
+OrganisationUnit
+OrganisationUnitNameResponse
+OrganisationUnitOrganisationRelationshipRequest
+OrganisationUnitOrganisationRelationshipRequestV1
+OrganisationUnitOrganisationRelationshipResponse
+PostalAddressResponse
+SearchChitizenshipResponseV1
+SearchIndividualNameResponseV1
+SearchIndividualResponseV1
+SearchInvolvedPartiesRequestV1
+SearchInvolvedPartiesResponseV1
+SearchInvolvedPartyByInternalIdentifierRequestV1
+SearchOrganisationResponseV1
+SearchOrganisationUnitAddressResponseV1
+SearchOrganisationUnitAddressResponseV2
+SearchOrganisationUnitDigitalAddressesV1
+SearchOrganisationUnitDigitalAddressesV2
+SearchOrganisationUnitExternalIdentifierResponseV1
+SearchOrganisationUnitExternalIdentifierResponseV2
+SearchOrganisationUnitInternalIdentifierResponseV1
+SearchOrganisationUnitInternalIdentifierResponseV2
+SearchOrganisationUnitInvolvedPartyTypeResponseV2
+SearchOrganisationUnitListResponseV2
+SearchOrganisationUnitNameResponseV1
+SearchOrganisationUnitNameResponseV2
+SearchOrganisationUnitResponseV1
+SearchOrganisationUnitResponseV2
+SoftClosePostalAddressRequest
+UpdateDigitalAddressV5Request
+UpdateDigitalAddressV5Response
+UpdateExternalIdentifierOrganisationUnitRequest
+UpdateExternalIdentifierOrganisationUnitResponse
+UpdateInvolvedPartyIndividualNamesResponseV5
+UpdateInvolvedPartyIndividualRequestV5
+UpdateInvolvedPartyIndividualResponseV5
+UpdateInvolvedPartyInternalIdentifierResponseV5
+UpdateInvolvedPartyOrganisationRequestV5
+UpdateInvolvedPartyOrganisationResponseV5
+UpdateInvolvedPartyOrganisationUnitRequestV5
+UpdateInvolvedPartyOrganisationUnitResponseV5
+UpdateInvolvedPartyRequestV5
+UpdateInvolvedPartyResponseV5
+UpdateOrganisationUnitNameV5Request
+UpdateOrganisationUnitNameV5Response
+UpdatePostalAddressV5Request
+UpdatePostalAddressV5Response
+repository
+AccountingDAO
+service
+AddressService
+DeleteOrganisationHierarchyService
+DigitalAddrService
+InvolvedPartySearchService
+OnePamRepository
+OrganisationUnitNameService
+OrganisationUnitService
+PhoenixDiscoveryService
+SoftClosePostalAddressService
+UpdateOrganisationUnitService
+utils
+DataDistributionConstants
+RegkeyEnum
+HeartbeatController
+batch
+configreader
+CofaceOpsConfigReader
+DdAccountTableMapper
+DdAccountTableReader
+OrganisationUnitRowMapper
+domain
+OrganisationDomain
+OrganisationDomainWrapper
+OrganisationUnitDomain
+OrganisationUnitDomainWrapper
+TaskletCofaceOpsDomainWrapper
+ecs
+kafka
+oil
+DataDistributionApplication
+resources
+avro
+NotifyDigitalAddress5Event.avsc
+NotifyIndustryClassification5Event.avsc
+NotifyInvolvedPartyExternalIdentifier5Event.avsc
+NotifyInvolvedPartyInternalIdentifier5Event.avsc
+notifyorganisationhierarchy5Event.avsc
+NotifyOrganisationUnitName5Event.avsc
+NotifyOrganization5Event.avsc
+NotifyOrganizationUnit5Event.avsc
+NotifyPostalAddress5Event.avsc
+cofaceOpsData.csv
+ddsql.txt
+test
+target
+pom.xml
+ichpConf
+LocalConf
+monitoring
+.gitignore
+ichp-deployment-nonProd.yml
+kingsroadData.yaml
+pom.xml
+PR-verify-pipeline.yml
+README.md
+resource.yaml
+SonarQube.yaml
+touchctl-pipeline.yaml
+whitelist.yml
