@@ -1,0 +1,132 @@
+package com.ing.datadist.configreader;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Repository
+@Slf4j
+public class CofaceOpsConfigReader {
+
+    private static final String FETCH_BY_ORG_NUMBER_SQL =
+            "SELECT OPS_ORGANISATIONUNITNAME, ORG_NUMBER, ADR_POSTALADDRESS_CNTRYCD, " +
+                    "ADR_POSTALADDRESS_STREETNM, ADR_POSTALADDRESS_HOUSENUM, ADR_POSTALADDRESS_HOUSEADD, " +
+                    "ADR_POSTALADDRESS_POSTALCD, ADR_POSTALADDRESS_CITYNAME, " +
+                    "OPS_EXTID_DATEOFISSUE, OPS_EXTID_EXPIRYDATE, " +
+                    "ADR_DIGITALADDR_EMAIL " +
+                    "FROM DD_COFACEOPS_TBL WHERE OPS_NUMBER = ?";
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public CofaceOpsConfigReader(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Map<String, String>> fetchByOrgNumber(String OPS_NUMBER) {
+        try{
+            log.debug("Start of fetchByOrgNumber");
+            log.debug("Fetching organisation unit config for Org Number: '{}'", OPS_NUMBER);
+
+            List<Map<String, String>> results = jdbcTemplate.query(
+                    FETCH_BY_ORG_NUMBER_SQL,
+                    new Object[]{OPS_NUMBER},
+                    new OrganisationUnitRowMapper()
+            );
+
+            log.debug("Fetched {} record(s) from DD_COFACEOPS_TBL by Org Number", results.size());
+            results.forEach(row -> log.debug("Row: {}", row));
+            log.debug("End of fetchByOrgNumber");
+            return results;
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+
+      }
+    public Map<String, String> fetchAddressDetails(String uuid) {
+        String sql = "SELECT ADR_POSTALADDRESS_STREETNM, ADR_POSTALADDRESS_CITYNAME, " +
+                "ADR_POSTALADDRESS_POSTALCD, ADR_POSTALADDRESS_CNTRYCD " +
+                "FROM DD_COFACEOPS_TBL WHERE OPS_UUID = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{uuid}, (rs, rowNum) -> {
+            Map<String, String> result = new HashMap<>();
+            result.put("street", rs.getString("ADR_POSTALADDRESS_STREETNM"));
+            result.put("city", rs.getString("ADR_POSTALADDRESS_CITYNAME"));
+            result.put("postalCode", rs.getString("ADR_POSTALADDRESS_POSTALCD"));
+            result.put("country", rs.getString("ADR_POSTALADDRESS_CNTRYCD"));
+            return result;
+        });
+    }
+
+    public String fetchOrganisationUnitName(String orgNumber) {
+        String sql = "SELECT OPS_ORGANISATIONUNITNAME FROM DD_COFACEOPS_TBL WHERE OPS_UUID = ?";
+        List<String> names = jdbcTemplate.query(sql, new Object[]{orgNumber}, (rs, rowNum) -> rs.getString("OPS_ORGANISATIONUNITNAME"));
+        return names.get(0);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.ing.datadist.configreader;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import static com.ing.datadist.api.utils.DataDistributionConstants.LOGICAL_DATA_DOMAIN;
+import static com.ing.datadist.api.utils.DataDistributionConstants.ORGANISATION_UNIT_NAME_TYPE;
+
+
+//            "SELECT OPS_ORGANISATIONUNITNAME, ORG_NUMBER, ADR_POSTALADDRESS_CNTRYCD, " +
+//                    "ADR_POSTALADDRESS_STREETNM, ADR_POSTALADDRESS_HOUSENUM, ADR_POSTALADDRESS_HOUSEADD, " +
+//                    "ADR_POSTALADDRESS_POSTALCD, ADR_POSTALADDRESS_CITYNAME, " +
+//                    "OPS_EXTID_DATEOFISSUE, OPS_EXTID_EXPIRYDATE, " +
+//                    "ADR_DIGITALADDR_EMAIL " +
+//                    "FROM DD_COFACEOPS_TBL WHERE OPS_NUMBER = ?";
+public class OrganisationUnitRowMapper implements RowMapper<Map<String, String>> {
+    @Override
+    public Map<String, String> mapRow(ResultSet organisationUnitResultSet, int rowNum) throws SQLException {
+        Map<String, String> row = new HashMap<>();
+        row.put("organisationUnitName", organisationUnitResultSet.getString("OPS_ORGANISATIONUNITNAME"));
+        row.put("orgNumber", organisationUnitResultSet.getString("ORG_NUMBER"));
+        row.put("countryOfResidence", organisationUnitResultSet.getString("ADR_POSTALADDRESS_CNTRYCD"));
+        row.put("dateOfIssue", organisationUnitResultSet.getString("OPS_EXTID_DATEOFISSUE"));
+        row.put("expiryDate", organisationUnitResultSet.getString("OPS_EXTID_EXPIRYDATE"));
+  //      row.put("uuid", organisationUnitResultSet.getString("OPS_UUID"));
+        row.put("logicalDataDomain", LOGICAL_DATA_DOMAIN);
+        row.put("organisationUnitNameType", ORGANISATION_UNIT_NAME_TYPE);
+        row.put("streetName", organisationUnitResultSet.getString("ADR_POSTALADDRESS_STREETNM"));
+        row.put("houseNumber", organisationUnitResultSet.getString("ADR_POSTALADDRESS_HOUSENUM"));
+        row.put("houseNumberAddition", organisationUnitResultSet.getString("ADR_POSTALADDRESS_HOUSEADD"));
+        row.put("postalCode", organisationUnitResultSet.getString("ADR_POSTALADDRESS_POSTALCD"));
+        row.put("cityName", organisationUnitResultSet.getString("ADR_POSTALADDRESS_CITYNAME"));
+
+        return row;
+    }
+}
