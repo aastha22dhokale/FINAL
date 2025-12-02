@@ -1,437 +1,155 @@
-package com.ing.datadist.api.repository;
+DD_OS_EXT_CTRL_OWNER
+
+===STG TABLE===
+
+CREATE TABLE DD_OS_EXT_STG_COFACE_OPS(
+SRC_INSTN_ID VARCHAR2(255),
+FILE_NAME VARCHAR2(255),
+xml_data XMLTYPE,
+oper_period varchar2(10),
+frequency varchar2(2)
+);
+
+=====AUDIT TABLE==========
+
+CREATE TABLE "DD_AUDIT_FLOW_STATUS"
+   (           "AUDIT-ID" VARCHAR2(255 CHAR),
+    "APPLICATION_CD" VARCHAR2(45 CHAR) ,
+               "FLOW_CD" VARCHAR2(45 CHAR) ,
+               "LAST_PROCESSING_TMS" TIMESTAMP,
+               "NEXT_PROCESSING_TMS" TIMESTAMP
+   )   ;
+
+====MAPPING TABLE=========
+
+  CREATE TABLE "DD_MAP_TBL"
+   (
+               "DD_UUID" VARCHAR2(50 CHAR),
+               "TYP_OF_ENTY" VARCHAR2(10),
+               "FIRST_NAME" VARCHAR2(255 CHAR),
+               "LAST_NAME" VARCHAR2(255 CHAR),
+               "BIRTH_DATE" TIMESTAMP (6),
+               "BIRTH_LOCALITY" VARCHAR2(255 CHAR),
+               "BIRTH_COUNTRY" VARCHAR2(255 CHAR),
+               "ADDR_STREET_NAME" VARCHAR2(64),
+               "ADDR_HOUSE_NUMBER" VARCHAR2(10),
+               "ADDR_BOX_NUMBER" VARCHAR2(10),
+               "ADDR_POSTAL_CODE" VARCHAR2(20),
+               "ADDR_LOCALITY_NAME" VARCHAR2(50),
+               "ADDR_COUNTRY_CODE" NUMBER(2,0),
+               "ORG_NUMBER" VARCHAR2(255 CHAR)
+   );
+
+====SEQUENCE=========
+
+CREATE SEQUENCE DD_UUID_SEQ MAXVALUE 99999999999999999999 INCREMENT BY 1 NOORDER;
+
+insert into DD_MAP_TBL(DD_UUID, TYP_OF_ENTY) values( DD_UUID_SEQ.nextval, 'some value');
+commit;
+
+ALTER TABLE dd_map_tbl
+ADD LE_NUMBER VARCHAR2(255 char);
+
+CREATE TABLE DD_cofaceops_TBL
+   (
+               "DD_UUID" VARCHAR2(50 CHAR),
+               "ORG_NUMBER" VARCHAR2(50 CHAR),
+               "OPS_ORGANISATIONUNITNAME" VARCHAR2(255 CHAR),
+               "ADR_POSTALADDRESS_STREETNM" VARCHAR2(255 CHAR),
+               "ADR_POSTALADDRESS_HOUSENUM" VARCHAR2(255 CHAR),
+               "ADR_POSTALADDRESS_HOUSEADD" VARCHAR2(255 CHAR),
+               "ADR_POSTALADDRESS_POSTALCD" VARCHAR2(64),
+               "ADR_POSTALADDRESS_CITYNAME" VARCHAR2(50),
+               "ADR_POSTALADDRESS_CNTRYCD" VARCHAR2(50),
+			   "OPS_EXTID_DATEOFISSUE" VARCHAR2(50),
+   			   "OPS_EXTID_EXPIRYDATE" VARCHAR2(50),
+               "ADR_DIGITALADDR_FULLTEL" VARCHAR2(50),
+               "ADR_DIGITALADDR_FULLTELFGN" VARCHAR2(50),
+               "ADR_DIGITALADDR_EMAIL" VARCHAR2(50)
+   );
+ALTER TABLE dd_cofaceops_tbl  ADD LE_NUMBER VARCHAR2(255 char) ADD LE_UUID VARCHAR2(50 char) ;
+ALTER TABLE dd_cofaceops_tbl  ADD RECORD_ACTION_TYPE VARCHAR2(255 char);
+
+ALTER TABLE DD_MAP_TBL
+RENAME COLUMN ORG_NUMBER TO OPS_NUMBER;
+
+ALTER TABLE DD_MAP_TBL
+RENAME COLUMN LE_NUMBER TO ORG_NUMBER;
+
+ALTER TABLE DD_cofaceops_TBL
+RENAME COLUMN ORG_NUMBER TO OPS_NUMBER;
+
+ALTER TABLE DD_cofaceops_TBL
+RENAME COLUMN DD_UUID TO OPS_UUID;
+
+ALTER TABLE DD_cofaceops_TBL
+RENAME COLUMN LE_UUID TO ORG_UUID;
+
+
+ALTER TABLE DD_cofaceops_TBL
+RENAME COLUMN LE_NUMBER TO ORG_NUMBER;
+
+
+====ACCOUNT TABLE=========
+
+CREATE TABLE "SYSTEM"."DD_ACCOUNT_TBL"
+(
+	"DD_UUID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
+	"EVENT_ID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
+	"TYP_OF_ENTY" VARCHAR2(10 BYTE),
+	"FIRST_NAME" VARCHAR2(255 CHAR),
+	"LAST_NAME" VARCHAR2(255 CHAR),
+	"BIRTH_DATE" DATE,
+	"BIRTH_LOCALITY" VARCHAR2(255 CHAR),
+	"BIRTH_COUNTRY" VARCHAR2(255 CHAR),
+	"ADDR_STREET_NAME" VARCHAR2(64 BYTE),
+	"ADDR_HOUSE_NUMBER" VARCHAR2(10 BYTE),
+	"ADDR_BOX_NUMBER" VARCHAR2(10 BYTE),
+	"ADDR_POSTAL_CODE" VARCHAR2(20 BYTE),
+	"ADDR_LOCALITY_NAME" VARCHAR2(50 BYTE),
+	"ADDR_COUNTRY_CODE" NUMBER(2,0),
+	"ORG_NUMBER" VARCHAR2(255 CHAR),
+    "UPDATED_TIME" TIMESTAMP
+);
+
+====EVENT TRACK TABLE=========
+
+CREATE TABLE "SYSTEM"."DD_EVENT_TRACK_TBL"
+(
+	"DD-UUID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
+	"EVENT_ID" VARCHAR2(50 CHAR) NOT NULL ENABLE,
+	"EVENT_NAME" VARCHAR2(50 CHAR),
+	"NOTIFICATION_TIME" TIMESTAMP,
+	"NOTIFICATION_TYPE" VARCHAR2(255 CHAR),
+	"TRANSACTION_TYPE" VARCHAR2(20 BYTE),
+	"SERVICE_EVENT_CORRELATION_ID" VARCHAR2(20 BYTE),
+	"SERVICE_EVENT_PARENT_EVENT_ID" VARCHAR2(20 BYTE),
+	"ACCESS_TOKEN_VALUE" VARCHAR2(10 BYTE),
+	"USER" VARCHAR2(20 BYTE),
+	"DATA_RESPONSE_FROM" VARCHAR2(10 BYTE)
+);
+
+ALTER TABLE DD_EVENT_TRACK_TBL  ADD STATUS VARCHAR2(255 char) ;
+ALTER TABLE DD_EVENT_TRACK_TBL
+RENAME COLUMN "DD-UUID" TO DD_UUID;
+
+
+ALTER TABLE DD_EVENT_TRACK_TBL
+MODIFY (
+    DD_UUID VARCHAR2(50 CHAR) NULL,
+    EVENT_ID VARCHAR2(50 CHAR) NULL,
+    TRANSACTION_TYPE VARCHAR2(50 CHAR)
+);
+
+ALTER TABLE dd_cofaceops_tbl DROP COLUMN RECORD_ACTION_TYPE;
+
+
+ALTER TABLE DD_ACCOUNT_TBL ADD DIGITAL_ADDRESS VARCHAR2(255 char) ;
+ALTER TABLE DD_ACCOUNT_TBL MODIFY ADDR_COUNTRY_CODE VARCHAR2(10 CHAR);
+
+
+CREATE TABLE DD_NOTIFICATION_STATUS (
+  DD_UUID     VARCHAR2(50 CHAR)         NOT NULL,
+  STATUS      VARCHAR2(50 CHAR)  NOT NULL
+);
 
-import com.ing.datadist.api.model.CreateInvolvedPartyResponseV5;
-import com.ing.datadist.api.model.InvolvedPartiesOrganisationUnitResponse;
-import com.ing.datadist.domain.OrganisationUnitDomainWrapper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-
-@Repository
-@Slf4j
-public class AccountingDAO {
-
-    private final JdbcTemplate jdbcTemplate;
-
-    public AccountingDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
- /*   public void updateExternalIdentifier(String uuid, String externalId) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET ORG_NUMBER = ?, UPDATED_TIME = ? WHERE DD_UUID = ?";
-        jdbcTemplate.update(sql, externalId, Timestamp.from(Instant.now()), uuid);
-        log.info("Updated external ID for UUID={}", uuid);
-    }*/
-
-
-    public void updateExternalIdentifier(String uuid, String externalId) {
-        String sql = """
-        UPDATE DD_ACCOUNT_TBL 
-        SET ORG_NUMBER = ?, UPDATED_TIME = ? 
-        WHERE DD_UUID = ?
-    """;
-        jdbcTemplate.update(sql, externalId, Timestamp.from(Instant.now()), uuid);
-    }
-
-
-/*
-    public void updateOrganisationUnitName(String uuid, String organisationUnitName) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET FIRST_NAME = ? WHERE DD_UUID = ?";
-        jdbcTemplate.update(sql, organisationUnitName, uuid);
-        log.info(" Organisation unit name updated for UUID={}", uuid);
-    }
-*/
-public void updateOrganisationUnitName(String uuid, String organisationUnitName) {
-
-    String sql = """
-
-        UPDATE DD_ACCOUNT_TBL 
-
-        SET FIRST_NAME = ?, UPDATED_TIME = ? 
-
-        WHERE DD_UUID = ?
-
-    """;
-
-    jdbcTemplate.update(sql, organisationUnitName, Timestamp.from(Instant.now()), uuid);
-
-}
-
-
-    /*public void updatePostalAddress(String uuid, String street, String houseNumber,
-                                    String houseNumberAddition, String postalCode,
-                                    String locality, String countryCode) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET ADDR_STREET_NAME = ?, ADDR_HOUSE_NUMBER = ?, ADDR_BOX_NUMBER = ?, ADDR_POSTAL_CODE = ?, ADDR_LOCALITY_NAME = ?, ADDR_COUNTRY_CODE = ?, UPDATED_TIME = ? WHERE DD_UUID = ?";
-        jdbcTemplate.update(sql, street, houseNumber, houseNumberAddition, postalCode, locality, countryCode, Timestamp.from(Instant.now()), uuid);
-        log.info("Postal Address updated for UUID={}", uuid);
-    }
-*/
-    public void updatePostalAddress(String uuid,
-
-                                    String street,
-
-                                    String houseNumber,
-
-                                    String houseNumberAddition,
-
-                                    String postalCode,
-
-                                    String locality,
-
-                                    String countryCode) {
-
-        String sql = """
-
-        UPDATE DD_ACCOUNT_TBL 
-
-        SET ADDR_STREET_NAME = ?, 
-
-            ADDR_HOUSE_NUMBER = ?, 
-
-            ADDR_BOX_NUMBER = ?, 
-
-            ADDR_POSTAL_CODE = ?, 
-
-            ADDR_LOCALITY_NAME = ?, 
-
-            ADDR_COUNTRY_CODE = ?, 
-
-            UPDATED_TIME = ?
-
-        WHERE DD_UUID = ?
-
-    """;
-
-        jdbcTemplate.update(sql,
-
-                street,
-
-                houseNumber,
-
-                houseNumberAddition,
-
-                postalCode,
-
-                locality,
-
-                countryCode,
-
-                Timestamp.from(Instant.now()),
-
-                uuid);
-
-    }
-
-
-    public void updateDigitalAddress(String uuid, String digitalAddress) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET DIGITAL_ADDRESS = ?, UPDATED_TIME = ? WHERE DD_UUID = ?";
-        jdbcTemplate.update(sql, digitalAddress, Timestamp.from(Instant.now()), uuid);
-        log.info("Digital Address updated for UUID={}", uuid);
-    }
-
-    public void updateHierarchy(String uuid, String parentId) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET LAST_NAME = ?, UPDATED_TIME = ? WHERE DD_UUID = ?";
-        jdbcTemplate.update(sql, parentId, Timestamp.from(Instant.now()), uuid);
-        log.info("Hierarchy updated for UUID={}", uuid);
-    }
-
-    public void createOuAccountingTableEntry(String ddUuid, String OuName) {
-        String eventId = "null";
-        String sql = "INSERT INTO DD_ACCOUNT_TBL(DD_UUID,FIRST_NAME, EVENT_ID) VALUES (?,?,?)";
-        jdbcTemplate.update(sql, ddUuid, OuName, eventId);
-        log.info("Created ou account table entry for UUID={}", ddUuid);
-    }
-
-    public void insertFullOrganisationUnit(CreateInvolvedPartyResponseV5 response) {
-        InvolvedPartiesOrganisationUnitResponse orgUnit = response.getOrganisationUnit();
-
-        String ddUuid = orgUnit.getInvolvedPartyInternalIdentifiers().get(0).getInvolvedPartyInternalIdentifierValue();
-        String eventId = "null";
-        String typeOfEntity = "ORG_UNIT";
-        String orgName = orgUnit.getOrganisationUnitNames().get(0).getOrganisationUnitName();
-        Timestamp updatedTime = Timestamp.from(Instant.now());
-
-        String sql = "INSERT INTO DD_ACCOUNT_TBL (DD_UUID, EVENT_ID, TYP_OF_ENTY, FIRST_NAME, UPDATED_TIME) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, ddUuid, eventId, typeOfEntity, orgName, updatedTime);
-
-        log.info("Inserted organisation unit record: UUID={}, EVENT_ID={}, ORG_NAME={}", ddUuid, eventId, orgName);
-    }
-/*
-
-    public void insertFullOrganisationUnitWithWrapper(OrganisationUnitDomainWrapper wrapper) {
-
-        String ddUuid = wrapper.getOpsUUID();
-        String eventId = "null";
-        String typeOfEntity = "ORG_UNIT";
-        String orgName = wrapper.getOrganisationUnitName();
-        String streetName = wrapper.getPostalAddressStreetNm();
-        String houseNumber = wrapper.getPostalAddressHouseNum();
-        String boxNumber = wrapper.getPostalAddressHouseNum();
-        String postalCode = wrapper.getPostalAddressPostalCd();
-        String countryCode = wrapper.getPostalAddressCntryCd();
-        String orgNumber = wrapper.getOrgExternalIdentifierVal();
-        String digitalAddress = wrapper.getDigitalAddrEmail();
-
-        Timestamp updatedTime = Timestamp.from(Instant.now());
-
-        String sql = "INSERT INTO DD_ACCOUNT_TBL (\n" +
-                "DD_UUID, EVENT_ID, TYP_OF_ENTY, FIRST_NAME, ADDR_STREET_NAME, ADDR_HOUSE_NUMBER, ADDR_BOX_NUMBER, ADDR_POSTAL_CODE," +
-                " ADDR_COUNTRY_CODE, ORG_NUMBER, UPDATED_TIME, DIGITAL_ADDRESS) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, ddUuid, eventId, typeOfEntity, orgName, streetName, houseNumber, boxNumber, postalCode,
-                countryCode, orgNumber, updatedTime, digitalAddress);
-
-        log.info("Inserted organisation unit record using wrapper UUID={}", ddUuid);
-    }
-*/
-/*
-
-    public void insertFullOrganisationUnitWithWrapper(OrganisationUnitDomainWrapper wrapper) {
-        String ddUuid = wrapper.getOpsUUID();
-        String eventId = "null"; // Use SQL NULL
-        String typeOfEntity = "ORG_UNIT";
-        String orgName = wrapper.getOrganisationUnitName();
-        String streetName = wrapper.getPostalAddressStreetNm();
-        String houseNumber = wrapper.getPostalAddressHouseNum();
-        String boxNumber = wrapper.getPostalAddressHouseAdd(); // FIXED
-        String postalCode = wrapper.getPostalAddressPostalCd();
-        String locality = wrapper.getPostalAddressCityName(); // ADD locality
-        String countryCode = wrapper.getPostalAddressCntryCd();
-        String orgNumber = wrapper.getOrgExternalIdentifierVal();
-        String digitalAddress = wrapper.getDigitalAddrEmail();
-        Timestamp updatedTime = Timestamp.from(Instant.now());
-
-        String sql = """
-        INSERT INTO DD_ACCOUNT_TBL (
-          DD_UUID, EVENT_ID, TYP_OF_ENTY, FIRST_NAME,
-          ADDR_STREET_NAME, ADDR_HOUSE_NUMBER, ADDR_BOX_NUMBER,
-          ADDR_POSTAL_CODE, ADDR_LOCALITY_NAME, ADDR_COUNTRY_CODE,
-          ORG_NUMBER, DIGITAL_ADDRESS, UPDATED_TIME
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """;
-
-        jdbcTemplate.update(sql, ddUuid, eventId, typeOfEntity, orgName,
-                streetName, houseNumber, boxNumber, postalCode, locality,
-                countryCode, orgNumber, digitalAddress, updatedTime);
-
-        log.info("Inserted organisation unit record using wrapper UUID={}", ddUuid);
-    }
-*/
-
-    public void updatePostalAddressVerificationDate(String uuid, LocalDate verificationDate) {
-        String sql = "UPDATE DD_ACCOUNT_TBL SET ADDR_LAST_VERIFICATION_DATE=?, UPDATED_TIME=? WHERE DD_UUID=?";
-        jdbcTemplate.update(sql, verificationDate, Timestamp.from(Instant.now()), uuid);
-        log.info("Postal address verification date updated for UUID={}", uuid);
-
-    }
-
-
-    public void insertFullOrganisationUnitWithWrapperMergeSqlServer(OrganisationUnitDomainWrapper wrapper) {
-        String ddUuid = wrapper.getOpsUUID();
-        String eventId = "null";
-        String typeOfEntity = "ORG_UNIT";
-        String orgName = wrapper.getOrganisationUnitName();
-        String streetName = wrapper.getPostalAddressStreetNm();
-        String houseNumber = wrapper.getPostalAddressHouseNum();
-        String boxNumber = wrapper.getPostalAddressHouseAdd();
-        String postalCode = wrapper.getPostalAddressPostalCd();
-        String locality   = wrapper.getPostalAddressCityName();
-        String countryCode = wrapper.getPostalAddressCntryCd();
-        String orgNumber = wrapper.getOrgExternalIdentifierVal();
-        String digitalAddress = wrapper.getDigitalAddrEmail();
-        Timestamp updatedTime = Timestamp.from(Instant.now());
-
-
-        String sql = """
-MERGE INTO DD_ACCOUNT_TBL tgt
-USING (
-  SELECT ? AS DD_UUID,
-         ? AS EVENT_ID,
-         ? AS TYP_OF_ENTY,
-         ? AS FIRST_NAME,
-         ? AS ADDR_STREET_NAME,
-         ? AS ADDR_HOUSE_NUMBER,
-         ? AS ADDR_BOX_NUMBER,
-         ? AS ADDR_POSTAL_CODE,
-         ? AS ADDR_LOCALITY_NAME,
-         ? AS ADDR_COUNTRY_CODE,
-         ? AS ORG_NUMBER,
-         ? AS DIGITAL_ADDRESS,
-         ? AS UPDATED_TIME
-  FROM dual
-) src
-ON (tgt.DD_UUID = src.DD_UUID)
-WHEN MATCHED THEN UPDATE SET
-  tgt.TYP_OF_ENTY        = src.TYP_OF_ENTY,
-  tgt.FIRST_NAME         = src.FIRST_NAME,
-  tgt.ADDR_STREET_NAME   = src.ADDR_STREET_NAME,
-  tgt.ADDR_HOUSE_NUMBER  = src.ADDR_HOUSE_NUMBER,
-  tgt.ADDR_BOX_NUMBER    = src.ADDR_BOX_NUMBER,
-  tgt.ADDR_POSTAL_CODE   = src.ADDR_POSTAL_CODE,
-  tgt.ADDR_LOCALITY_NAME = src.ADDR_LOCALITY_NAME,
-  tgt.ADDR_COUNTRY_CODE  = src.ADDR_COUNTRY_CODE,
-  tgt.ORG_NUMBER         = src.ORG_NUMBER,
-  tgt.DIGITAL_ADDRESS    = src.DIGITAL_ADDRESS,
-  tgt.UPDATED_TIME       = src.UPDATED_TIME
-WHEN NOT MATCHED THEN INSERT (
-  DD_UUID, EVENT_ID, TYP_OF_ENTY, FIRST_NAME,
-  ADDR_STREET_NAME, ADDR_HOUSE_NUMBER, ADDR_BOX_NUMBER,
-  ADDR_POSTAL_CODE, ADDR_LOCALITY_NAME, ADDR_COUNTRY_CODE,
-  ORG_NUMBER, DIGITAL_ADDRESS, UPDATED_TIME
-) VALUES (
-  src.DD_UUID, src.EVENT_ID, src.TYP_OF_ENTY, src.FIRST_NAME,
-  src.ADDR_STREET_NAME, src.ADDR_HOUSE_NUMBER, src.ADDR_BOX_NUMBER,
-  src.ADDR_POSTAL_CODE, src.ADDR_LOCALITY_NAME, src.ADDR_COUNTRY_CODE,
-  src.ORG_NUMBER, src.DIGITAL_ADDRESS, src.UPDATED_TIME
-)
-""";
-
-
-        jdbcTemplate.update(sql, ddUuid, eventId, typeOfEntity, orgName, streetName, houseNumber, boxNumber,
-                postalCode, locality, countryCode, orgNumber, digitalAddress, updatedTime);
-
-        log.info("Upserted organisation unit record using wrapper (SQL Server MERGE) UUID={}", ddUuid);
-    }
-
-}
-
-
-package com.ing.datadist.api.service;
-import com.ing.datadist.api.model.CreatePostalAddressRequest;
-import com.ing.datadist.api.model.PostalAddressResponse;
-import com.ing.datadist.api.model.UpdatePostalAddressV5Request;
-import com.ing.datadist.api.service.OnePamRepository;
-import com.ing.datadist.api.utils.DataDistributionConstants;
-import com.ing.datadist.batch.repository.MappingDAO;
-import com.ing.datadist.configreader.CofaceOpsConfigReader;
-import com.ing.datadist.kafka.util.EventTransactionType;
-import com.ing.datadist.kafka.util.NotificationStatus;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import com.ing.datadist.api.utils.DataDistributionConstants.*;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-@Service
-@Slf4j
-public class AddressService {
-
-    private final OnePamRepository onePamRepository;
-    private final MappingDAO mappingDAO;
-    private final CofaceOpsConfigReader configReader;
-
-    public AddressService(OnePamRepository onePamRepository,
-                          MappingDAO mappingDAO,
-                          CofaceOpsConfigReader configReader) {
-        this.onePamRepository = onePamRepository;
-        this.mappingDAO = mappingDAO;
-        this.configReader = configReader;
-    }
-
-    public PostalAddressResponse createPostalAddress(String uuid) {
-        log.info("Starting postal address creation for uuid={}", uuid);
-
-        CreatePostalAddressRequest request = buildCreateRequest(uuid);
-
-        try {
-            mappingDAO.insertEventTrack(
-                    uuid,
-                    "CreatePostalAddressApi",
-                    EventTransactionType.CREATE_ORG_UNIT_POSTAL_ADDRESS.getLabel(),
-                    NotificationStatus.PENDING.name()
-            );
-
-            onePamRepository.createPostalAddress(uuid, request).get();
-            mappingDAO.insertEventTrack(
-                    uuid,
-                    "CreatePostalAddressApi",
-                    EventTransactionType.CREATE_ORG_UNIT_POSTAL_ADDRESS.getLabel(),
-                    NotificationStatus.RECEIVED.name()
-            );
-
-            if (mappingDAO.findPendingNotifications(uuid).isEmpty()) {
-                mappingDAO.insertFinalStatus(uuid, "SUCCESS");
-                log.info("FINAL STATUS INSERTED for {}", uuid);
-            }
-
-            log.info("Successfully created postal address for uuid={}", uuid);
-
-            return PostalAddressResponse.builder()
-                    .streetName(request.getStreetName())
-                    .postalAddressUsageType(defaultIfBlank(request.getPostalAddressUsageType(), "BSN_ADR"))
-                    .houseNumber(request.getHouseNumber())
-                    .houseNumberAddition(request.getHouseNumberAddition())
-                    .postalCode(request.getPostalCode())
-                    .cityName(request.getCityName())
-                    .countryCode(defaultIfBlank(request.getCountryCode(), "BE"))
-                    .build();
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restore interrupt flag
-            log.error("Thread interrupted while creating postal address for uuid={}", uuid, e);
-            throw new RuntimeException("Postal address creation interrupted", e);
-        } catch (ExecutionException e) {
-            log.error("Execution failed while creating postal address for uuid={}", uuid, e);
-            throw new RuntimeException("Postal address creation failed", e);
-        } catch (Exception e) {
-            log.error("Unexpected error creating postal address for uuid={}: {}", uuid, e.getMessage(), e);
-            throw new RuntimeException("Postal address creation failed", e);
-        }
-    }
-
-    private CreatePostalAddressRequest buildCreateRequest(String uuid) {
-        Map<String, String> cfg = getConfig(uuid);
-
-        return CreatePostalAddressRequest.builder()
-                .dataSource(DataDistributionConstants.DATA_SOURCE)
-                .countryCode(defaultIfBlank(cfg.get("countryCode"), "BE"))
-                .postalAddressUsageType(defaultIfBlank(cfg.get("postalAddressUsageType"), "BSN_ADR"))
-                .streetName(cfg.get("streetName"))
-                .houseNumber(cfg.get("houseNumber"))
-                .houseNumberAddition(cfg.get("houseNumberAddition"))
-                .postalCode(cfg.get("postalCode"))
-                .cityName(cfg.get("cityName"))
-                .effectiveDate(cfg.get("effectiveDate"))
-                .endDate(cfg.get("endDate"))
-                .build();
-    }
-
-    private Map<String, String> getConfig(String uuid) {
-        try {
-            Map<String, String> configRead = configReader.fetchAddressDetails(uuid);
-            return (configRead == null) ? Collections.emptyMap() : configRead;
-        } catch (Exception e) {
-            log.warn("Failed to load postal address config for uuid={}. Falling back to defaults. Cause: {}", uuid, e.getMessage());
-            return Collections.emptyMap();
-        }
-    }
-
-    private String defaultIfBlank(String value, String fallback) {
-        return (value == null || value.isBlank()) ? fallback : value;
-    }
-
-    public void updateLastVerificationDate(String uuid, String usageType) {
-
-        String nowIso = java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)
-                .format(java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
-        UpdatePostalAddressV5Request request = new UpdatePostalAddressV5Request();
-        request.setLastVerificationDate(nowIso);
-        String endpoint = String.format("/v5/involved-parties/%s/postal-addresses/%s", uuid, usageType);
-
-        try {
-            onePamRepository.updatePostalAddress(request, uuid, "BSN_ADR");
-            log.info("PATCH successful for uuid={} usageType={} verificationDate={}", uuid, usageType);
-        } catch (Exception e) {
-            log.error("PATCH failed for uuid={} usageType={} error={}", uuid, usageType, e.getMessage(), e);
-            throw new RuntimeException("Failed to update verification date", e);
-        }
-    }
-}
