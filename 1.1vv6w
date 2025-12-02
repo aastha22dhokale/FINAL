@@ -1,314 +1,123 @@
 
-  reason: actual and formal argument lists differ in length
-[INFO] 1 error
-[INFO] -------------------------------------------------------------
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  17.487 s
-[INFO] Finished at: 2025-12-02T23:53:26+05:30
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.0:compile (default-compile) on project DataDistribution: Compilation failure
-[ERROR] /C:/Users/UU47VT/demo=api/P33558-DataDistributorAPI/DataDistribution/src/main/java/com/ing/datadist/batch/tasklet/OnePamSearchApiTasklet.java:[76,56] method processOrganisationUnit in class com.ing.datadist.api.service.OrganisationUnitService cannot be applied to given types;
-[ERROR]   required: java.lang.String,com.ing.datadist.api.model.CreatePostalAddressRequest,com.ing.datadist.api.model.CreateDigitalAddressV5Request,com.ing.datadist.api.model.UpdateExternalIdentifierOrganisationUnitRequest,com.ing.datadist.api.model.CreateOrganisationUnitRequest
-[ERROR]   found:    java.lang.String
-[ERROR]   reason: actual and formal argument lists differ in length
-[ERROR]
-[ERROR] -> [Help 1]
-[ERROR]
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR]
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
-PS C:\Users\UU47VT\demo=api\P33558-DataDistributorAPI\DataDistribution> 
-//a8eb7b57-9780-41b8-a552-3b2388ebeaad
-//
+2025-12-03T00:01:04.856+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.a.service.OrganisationUnitService  : AASTHA UUID9aa1ae44-f2f4-47a1-9266-f7053476a9a6     
+2025-12-03T00:01:04.856+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.a.service.OrganisationUnitService  : AASTHA UUID WRAPPERnull
+2025-12-03T00:01:04.856+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.a.service.OrganisationUnitService  : AASTHA ORG_NUMBER null
+2025-12-03T00:01:04.857+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.a.service.OrganisationUnitService  : AASTHA ORG NAMEnull
+2025-12-03T00:01:04.857+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.a.service.OrganisationUnitService  : AASTHA STREET NAMEnull
+2025-12-03T00:01:04.858+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.api.repository.AccountingDAO       : AASTHA MERGE
+2025-12-03T00:01:04.858+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.api.repository.AccountingDAO       : AASTHA MERGE2
+2025-12-03T00:01:04.858+05:30  INFO 37052 --- [Integration-Module] [   scheduling-1] c.i.d.api.repository.AccountingDAO       : AASTHA MERGE7
+2025-12-03T00:01:04.881+05:30 ERROR 37052 --- [Integration-Module] [   scheduling-1] c.i.d.b.tasklet.OnePamSearchApiTasklet   : Exception occurred while executing API call for UUID :9aa1ae44-f2f4-47a1-9266-f7053476a9a6 error :{}
 
-package com.ing.datadist.api.service;
+org.springframework.dao.DataIntegrityViolationException: PreparedStatementCallback; SQL [MERGE INTO DD_ACCOUNT_TBL tgt
+USING (
+  SELECT ? AS DD_UUID,
 
-import com.ing.datadist.api.model.*;
-import com.ing.datadist.api.repository.AccountingDAO;
-import com.ing.datadist.batch.repository.MappingDAO;
-import com.ing.datadist.configreader.CofaceOpsConfigReader;
-import com.ing.datadist.domain.OrganisationUnitDomainWrapper;
-import com.ing.datadist.kafka.util.EventTransactionType;
-import com.ing.datadist.kafka.util.NotificationStatus;
-import com.twitter.finagle.http.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+         ? AS EVENT_ID,
+         ? AS TYP_OF_ENTY,
+         ? AS FIRST_NAME,
+         ? AS ADDR_STREET_NAME,
+         ? AS ADDR_HOUSE_NUMBER,
+         ? AS ADDR_BOX_NUMBER,
+         ? AS ADDR_POSTAL_CODE,
+         ? AS ADDR_LOCALITY_NAME,
+         ? AS ADDR_COUNTRY_CODE,
+         ? AS ORG_NUMBER,
+         ? AS DIGITAL_ADDRESS,
+         ? AS UPDATED_TIME
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+  FROM dual
+) src
+ON (tgt.DD_UUID = src.DD_UUID)
+WHEN MATCHED THEN UPDATE SET
+  tgt.TYP_OF_ENTY        = src.TYP_OF_ENTY,
+  tgt.FIRST_NAME         = src.FIRST_NAME,
+  tgt.ADDR_STREET_NAME   = src.ADDR_STREET_NAME,
+  tgt.ADDR_HOUSE_NUMBER  = src.ADDR_HOUSE_NUMBER,
+  tgt.ADDR_BOX_NUMBER    = src.ADDR_BOX_NUMBER,
+  tgt.ADDR_POSTAL_CODE   = src.ADDR_POSTAL_CODE,
+  tgt.ADDR_LOCALITY_NAME = src.ADDR_LOCALITY_NAME,
+  tgt.ADDR_COUNTRY_CODE  = src.ADDR_COUNTRY_CODE,
+  tgt.ORG_NUMBER         = src.ORG_NUMBER,
+  tgt.DIGITAL_ADDRESS    = src.DIGITAL_ADDRESS,
+  tgt.UPDATED_TIME       = src.UPDATED_TIME
 
-import static com.ing.datadist.api.utils.DataDistributionConstants.*;
+WHEN NOT MATCHED THEN INSERT (
+  DD_UUID, EVENT_ID, TYP_OF_ENTY, FIRST_NAME,
+  ADDR_STREET_NAME, ADDR_HOUSE_NUMBER, ADDR_BOX_NUMBER,
+  ADDR_POSTAL_CODE, ADDR_LOCALITY_NAME, ADDR_COUNTRY_CODE,
+  ORG_NUMBER, DIGITAL_ADDRESS, UPDATED_TIME
 
-@Service
-@Slf4j
-public class OrganisationUnitService {
+) VALUES (
+  src.DD_UUID, src.EVENT_ID, src.TYP_OF_ENTY, src.FIRST_NAME,
+  src.ADDR_STREET_NAME, src.ADDR_HOUSE_NUMBER, src.ADDR_BOX_NUMBER,
+  src.ADDR_POSTAL_CODE, src.ADDR_LOCALITY_NAME, src.ADDR_COUNTRY_CODE,
+  src.ORG_NUMBER, src.DIGITAL_ADDRESS, src.UPDATED_TIME
+)
+]; ORA-01400: cannot insert NULL into ("SYSTEM"."DD_ACCOUNT_TBL"."DD_UUID")
 
-    private final OnePamRepository onePamRepository;
-    private final CofaceOpsConfigReader configReader;
-    private final AddressService addressService;
-    private final DigitalAddrService digitalAddrService;
-    private final AccountingDAO accountingDAO;
-    private final MappingDAO mappingDAO;
-    Instant effectiveDateSet = Instant.now()
-            .minusSeconds(120) // safety margin
-            .truncatedTo(ChronoUnit.SECONDS);
+https://docs.oracle.com/error-help/db/ora-01400/
+        at org.springframework.jdbc.support.SQLExceptionSubclassTranslator.doTranslate(SQLExceptionSubclassTranslator.java:97) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107) ~[spring-jdbc-6.2.8.jar:6.2.8]        
+        at org.springframework.jdbc.core.JdbcTemplate.translateException(JdbcTemplate.java:1556) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:677) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:972) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:1016) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at org.springframework.jdbc.core.JdbcTemplate.update(JdbcTemplate.java:1026) ~[spring-jdbc-6.2.8.jar:6.2.8]
+        at com.ing.datadist.api.repository.AccountingDAO.insertFullOrganisationUnitWithWrapperMergeSqlServer(AccountingDAO.java:325) ~[classes/:na]
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:138) ~[spring-tx-6.2.8.jar:6.2.8]      
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728) ~[spring-aop-6.2.8.jar:6.2.8]
+        at com.ing.datadist.api.repository.AccountingDAO$$SpringCGLIB$$0.insertFullOrganisationUnitWithWrapperMergeSqlServer(<generated>) ~[classes/:na]
+        at com.ing.datadist.api.service.OrganisationUnitService.processOrganisationUnit(OrganisationUnitService.java:334) ~[classes/:na]
+        at com.ing.datadist.batch.tasklet.OnePamSearchApiTasklet.execute(OnePamSearchApiTasklet.java:76) ~[classes/:na]
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+        at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.support.DelegatingIntroductionInterceptor.doProceed(DelegatingIntroductionInterceptor.java:137) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.support.DelegatingIntroductionInterceptor.invoke(DelegatingIntroductionInterceptor.java:124) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.2.8.jar:6.2.8]
+        at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728) ~[spring-aop-6.2.8.jar:6.2.8]
+        at com.ing.datadist.batch.tasklet.OnePamSearchApiTasklet$$SpringCGLIB$$0.execute(<generated>) ~[classes/:na]
+        at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:383) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:307) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.transaction.support.TransactionTemplate.execute(TransactionTemplate.java:140) ~[spring-tx-6.2.8.jar:6.2.8]
+        at org.springframework.batch.core.step.tasklet.TaskletStep$2.doInChunkContext(TaskletStep.java:250) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.scope.context.StepContextRepeatCallback.doInIteration(StepContextRepeatCallback.java:82) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.repeat.support.RepeatTemplate.getNextResult(RepeatTemplate.java:369) ~[spring-batch-infrastructure-5.2.2.jar:5.2.2]
+        at org.springframework.batch.repeat.support.RepeatTemplate.executeInternal(RepeatTemplate.java:206) ~[spring-batch-infrastructure-5.2.2.jar:5.2.2]
+        at org.springframework.batch.repeat.support.RepeatTemplate.iterate(RepeatTemplate.java:140) ~[spring-batch-infrastructure-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.step.tasklet.TaskletStep.doExecute(TaskletStep.java:235) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.step.AbstractStep.execute(AbstractStep.java:230) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.job.SimpleStepHandler.handleStep(SimpleStepHandler.java:153) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.job.AbstractJob.handleStep(AbstractJob.java:408) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.job.SimpleJob.doExecute(SimpleJob.java:127) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.job.AbstractJob.execute(AbstractJob.java:307) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.batch.core.launch.support.TaskExecutorJobLauncher$1.run(TaskExecutorJobLauncher.java:155) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at org.springframework.core.task.SyncTaskExecutor.execute(SyncTaskExecutor.java:50) ~[spring-core-6.2.8.jar:6.2.8]
+        at org.springframework.batch.core.launch.support.TaskExecutorJobLauncher.run(TaskExecutorJobLauncher.java:146) ~[spring-batch-core-5.2.2.jar:5.2.2]
+        at com.ing.datadist.batch.schedular.BatchSchedular.run(BatchSchedular.java:50) ~[classes/:na]
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+        at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+        at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130) ~[spring-context-6.2.8.jar:6.2.8]
+        at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124) ~[spring-context-6.2.8.jar:6.2.8]
+        at io.micrometer.observation.Observation.observe(Observation.java:498) ~[micrometer-observation-1.15.1.jar:1.15.1]
+        at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124) ~[spring-context-6.2.8.jar:6.2.8]
+        at org.springframework.scheduling.config.Task$OutcomeTrackingRunnable.run(Task.java:85) ~[spring-context-6.2.8.jar:6.2.8]
+        at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54) ~[spring-context-6.2.8.jar:6.2.8]
+        at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96) ~[spring-context-6.2.8.jar:6.2.8]
+        at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
+        at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
+        at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
+        at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
+        at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: java.sql.SQLIntegrityConstraintViolationException: ORA-01400: cannot insert NULL into ("SYSTEM"."DD_ACCOUNT_TBL"."DD_UUID")
 
-    Instant endDateSet = effectiveDateSet.plus(3652, ChronoUnit.DAYS);
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-    public OrganisationUnitService(OnePamRepository onePamRepository,
-                                   CofaceOpsConfigReader configReader,
-                                   AddressService addressService,
-                                   DigitalAddrService digitalAddrService,
-                                   AccountingDAO accountingDAO,
-                                   MappingDAO mappingDAO) {
-        this.onePamRepository = onePamRepository;
-        this.configReader = configReader;
-        this.addressService = addressService;
-        this.digitalAddrService = digitalAddrService;
-        this.accountingDAO = accountingDAO;
-        this.mappingDAO = mappingDAO;
-    }
-public void processOrganisationUnit(String orgNumber,
-                                    CreatePostalAddressRequest postalRequest,
-                                    CreateDigitalAddressV5Request digitalRequest,
-                                    UpdateExternalIdentifierOrganisationUnitRequest externalIdRequest,
-                                    CreateOrganisationUnitRequest orgUnitRequest
-                              //      OrganisationUnitOrganisationRelationshipRequest req
-                                    ) throws Exception {
-
-    // 1. FETCH CONFIG
-    Map<String, String> config = getConfig(orgNumber);
-    log.info("CONFIG LOADED FOR ORG={} -> {}", orgNumber, config);
-
-    // 2. BUILD WRAPPER (MERGE INTO SQL)
-    OrganisationUnitDomainWrapper wrapper = new OrganisationUnitDomainWrapper();
-    log.info("AASTHA UUID" + orgNumber);
-    log.info("AASTHA UUID WRAPPER" + wrapper.getOpsUUID());
-    wrapper.setOpsUUID(config.get("OPS_UUID"));
-    wrapper.setOrgExternalIdentifierVal(config.get("ORG_NUMBER"));
-    log.info("AASTHA ORG_NUMBER " + config.get("ORG_NUMBER"));
-    wrapper.setOrganisationUnitName(decodeHtml(config.get("OPS_ORGANISATIONUNITNAME")));
-    log.info("AASTHA ORG NAME" + config.get("OPS_ORGANISATIONUNITNAME"));
-    wrapper.setPostalAddressStreetNm(config.get("ADR_POSTALADDRESS_STREETNM"));
-    log.info("AASTHA STREET NAME" + config.get("ADR_POSTALADDRESS_STREETNM"));
-    wrapper.setPostalAddressHouseNum(config.get("ADR_POSTALADDRESS_HOUSENUM"));
-    wrapper.setPostalAddressHouseAdd(config.get("ADR_POSTALADDRESS_HOUSEADD"));
-    wrapper.setPostalAddressPostalCd(config.get("ADR_POSTALADDRESS_POSTALCD"));
-    wrapper.setPostalAddressCityName(config.get("ADR_POSTALADDRESS_CITYNAME"));
-    wrapper.setPostalAddressCntryCd(normalizeCountryCode(config.get("ADR_POSTALADDRESS_CNTRYCD")));
-    wrapper.setOpsExtIdDateOfIssue(config.get("OPS_EXTID_DATEOFISSUE"));
-    wrapper.setOpsExtIdExpiryDate(config.get("OPS_EXTID_EXPIRYDATE"));
-    wrapper.setDigitalAddrEmail(config.get("ADR_DIGITALADDR_EMAIL"));
-
-    accountingDAO.insertFullOrganisationUnitWithWrapperMergeSqlServer(wrapper);
-
-    // 3. CREATE OU
-    CreateInvolvedPartyResponseV5 response = createOrganisationUnit(orgNumber);
-
-    // 4. EXTRACT UUID SAFELY
-    String uuid = response.getOrganisationUnit()
-            .getInvolvedPartyInternalIdentifiers()
-            .stream()
-            .findFirst()
-            .map(InternalIdentifierResponse::getInvolvedPartyInternalIdentifierValue)
-            .orElse(null);
-
-    if (uuid == null || uuid.isBlank()) {
-        log.error("NO UUID returned for ORG={}. Stopping flow.", orgNumber);
-        return;
-    }
-    log.info("UUID extracted for ORG {} => {}", orgNumber, uuid);
-
-    // 5. UPDATE EXTERNAL IDENTIFIER (SEQUENTIAL)
-    UpdateExternalIdentifierOrganisationUnitRequest updateRequest =
-            UpdateExternalIdentifierOrganisationUnitRequest.builder()
-                    .involvedPartyExternalIdentifierType(EXTERNAL_ID_TYPE)
-                    .involvedPartyExternalIdentifierValue(config.get("ORG_NUMBER"))
-                    .build();
-
-    Response extIdResp = onePamRepository.updateExternalIdentifier(uuid, updateRequest).get();
-
-    if (extIdResp.statusCode() >= 200 && extIdResp.statusCode() < 300) {
-        accountingDAO.updateExternalIdentifier(uuid, config.get("ORG_NUMBER"));
-    } else {
-        log.error("External ID update FAILED for UUID={} status={}", uuid, extIdResp.statusCode());
-        return;
-    }
-
-    // 6. CREATE POSTAL ADDRESS (SEQUENTIAL)
-    PostalAddressResponse addr = addressService.createPostalAddress(uuid);
-    if (addr != null) {
-        accountingDAO.updatePostalAddress(
-                uuid,
-                addr.getStreetName(),
-                addr.getHouseNumber(),
-                addr.getHouseNumberAddition(),
-                addr.getPostalCode(),
-                addr.getCityName(),
-                addr.getCountryCode()
-        );
-    }
-
-    // 7. OPTIONAL DIGITAL ADDRESS
-    if (digitalRequest != null && digitalRequest.getFullDigitalAddress() != null) {
-        DigitalAddressResponse dar = digitalAddrService.createDigitalAddress(uuid, digitalRequest);
-        if (dar != null) {
-            accountingDAO.updateDigitalAddress(uuid, dar.getFullDigitalAddress());
-        }
-    }
-
-    // 8. HIERARCHY CREATION (SEQUENTIAL)
-    final String parentId = "a8eb7b57-9780-41b8-a552-3b2388ebeaad";
-
-    accountingDAO.updateHierarchy(uuid, parentId);
-    mappingDAO.insertEventTrack(uuid, "OrganisationUnitHierarchyAPI",
-            EventTransactionType.CREATE_ORG_HIERARCHY.getLabel(), NotificationStatus.PENDING.name());
-
-    Response hierResp = createOrganisationUnitHierarchy(uuid, parentId);
-
-    mappingDAO.insertEventTrack(uuid, "OrganisationUnitHierarchyAPI",
-            EventTransactionType.CREATE_ORG_HIERARCHY.getLabel(), NotificationStatus.RECEIVED.name());
-
-    log.info("SEQUENTIAL FLOW COMPLETE for UUID={}", uuid);
-}
-
-
-
-
-    private CreateInvolvedPartyResponseV5 createOrganisationUnit(String uuid) {
-
-        String organisationUnitName = String.valueOf(configReader.fetchOrganisationUnitName(uuid));
-
-        Map<String, String> config = getConfig(uuid);
-        CreateInvolvedPartyRequestV5 request = CreateInvolvedPartyRequestV5.builder()
-                .organisationUnit(
-                        CreateOrganisationUnitRequest.builder()
-                        .dataSource(DATA_SOURCE)
-                        .logicalDataDomain(LOGICAL_DATA_DOMAIN)
-                        .countryOfResidence(config.get("countryOfResidence"))
-                        .preferredLanguage(LANGUAGE)
-                        .channelOfEntry(CHANNEL_OF_ENTRY)
-                        .organisationUnitStructureType(STRUCTURE_TYPE)
-                        .effectiveDate(config.get("dateOfIssue"))
-                                .involvedPartyInternalIdentifiers(Collections.singletonList(
-                                        CreateInternalIdentifierRequest.builder()
-                                                .involvedPartyInternalIdentifierType("CSI_BE")
-                                                .involvedPartyInternalIdentifierValue(config.get(uuid))
-                                                .build()))
-                        .organisationUnitNames(Collections.singletonList(
-                                CreateOrganisationUnitNameRequest.builder()
-                                        .organisationUnitNameType(ORGANISATION_UNIT_NAME_TYPE)
-                                        .organisationUnitName(organisationUnitName)
-                                        .build()))
-                        .build())
-                .build();
-        try {
-            accountingDAO.createOuAccountingTableEntry(uuid,organisationUnitName);
-            mappingDAO.insertEventTrack(uuid, "CreateOrganisationUnitApi",
-                    EventTransactionType.CREATE_ORG_UNIT.getLabel(), NotificationStatus.PENDING.name());
-
-            CreateInvolvedPartyResponseV5 responseV5 = onePamRepository.createInvolvedParty(request).get();
-
-            mappingDAO.insertEventTrack(uuid, "CreateOrganisationUnitApi",
-                    EventTransactionType.CREATE_ORG_UNIT.getLabel(), NotificationStatus.RECEIVED.name());
-            if( mappingDAO.findPendingNotifications(uuid).isEmpty())
-            {
-                mappingDAO.insertFinalStatus(uuid, "SUCCESS");
-                log.info(" FINAL STATUS INSERTED for {}", uuid);
-            }
-            return responseV5;
-        } catch (Exception e) {
-            log.error("Failed to create organisation unit for uuid={}: {}", uuid, e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private UpdateExternalIdentifierOrganisationUnitRequest buildUpdateRequest(String uuid) {
-        Map<String, String> config = getConfig(uuid);
-        return UpdateExternalIdentifierOrganisationUnitRequest.builder()
-                .involvedPartyExternalIdentifierType(EXTERNAL_ID_TYPE)
-                .involvedPartyExternalIdentifierValue(config.getOrDefault("ORG_NUMBER", uuid))
-                .countryOfIssue(config.get("countryOfResidence"))
-                .placeOfIssue(PLACE_OF_ISSUE)
-                .dateOfIssue(config.get("dateOfIssue"))
-                .expiryDate(config.get("expiryDate"))
-                .dataSource(DATA_SOURCE)
-                .effectiveDate(effectiveDateSet.toString())
-                .endDate(endDateSet.toString())
-                .build();
-    }
-
-//    private Response createOrganisationUnitHierarchy(String childId, String parentId) {
-//        OrganisationUnitOrganisationRelationshipRequest request = OrganisationUnitOrganisationRelationshipRequest.builder()
-//                .childOrganisationUnitIdentifier(childId)
-//                .parentOrganisationIdentifier(parentId)
-//             //   .parentRoleReasonType(ROLE_REASON_TYPE)
-//                .dataSource(DATA_SOURCE)
-//                .build();
-//        try {
-//            Response response = onePamRepository.createOrganisationUnitHierarchy(request).get();
-//            log.info("Successfully created hierarchy between child: {} and parent: {}", childId, parentId);
-//            return response;
-//        } catch (Exception e) {
-//            log.error("Failed to create organisation unit hierarchy", e);
-//            throw new RuntimeException("Hierarchy creation failed", e);
-//        }
-//    }
-
-
-    private Response createOrganisationUnitHierarchy(String childId, String parentId) {
-        OrganisationUnitOrganisationRelationshipRequest relationshipRequest =
-                OrganisationUnitOrganisationRelationshipRequest.builder()
-                        .childOrganisationUnitIdentifier(childId)
-                        .parentOrganisationIdentifier(parentId)
-                        .parentRoleReasonType("CPTL_CTRL") // Replace with constant if needed
-                        .dataSource("FOS_IT") // Replace with constant if needed
-                        .build();
-
-        OrganisationUnitOrganisationRelationshipRequestV1 wrapper =
-                OrganisationUnitOrganisationRelationshipRequestV1.builder()
-                        .organisationUnitOrganisationRelationship(relationshipRequest)
-                        .build();
-
-        try {
-            Response response = onePamRepository.createOrganisationUnitHierarchy(wrapper).get();
-            log.info("Successfully created hierarchy between child: {} and parent: {}", childId, parentId);
-            return response;
-        } catch (Exception e) {
-            log.error("Failed to create organisation unit hierarchy", e);
-            throw new RuntimeException("Hierarchy creation failed", e);
-        }
-    }
-
-    private Map<String, String> getConfig(String orgNumber) {
-        try{
-            List<Map<String, String>> list = configReader.fetchByOrgNumber(orgNumber);
-            return list.isEmpty() ? Collections.emptyMap() : list.get(0);
-        } catch (Exception e){
-            e.printStackTrace();
-            throw e;
-        }
-
-    }
-
-    private String decodeHtml(String s) {
-        return (s == null) ? null : s.replace("&amp;", "&").trim();
-    }
-
-    private String normalizeCountryCode(String s) {
-        if (s == null || s.isBlank()) return null;
-        return "000".equals(s.trim()) ? "BE" : s.trim().toUpperCase();
-    }
-
-}
